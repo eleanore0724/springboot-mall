@@ -1,5 +1,7 @@
 package com.AAA.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,13 @@ public class ProductController {
 	
 	@Autowired
 	private ProductService productService;
+	
+	@GetMapping("/products")
+	public ResponseEntity<List<Product>> getProducts(){
+		List<Product> productList = productService.getProducts();
+		return ResponseEntity.status(HttpStatus.OK).body(productList);
+	}
+	
 	
 	@GetMapping("/products/{productId}")
 	public ResponseEntity<Product> getProduct(@PathVariable Integer productId){
@@ -62,4 +71,6 @@ public class ProductController {
 		
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
+	
+	
 }
