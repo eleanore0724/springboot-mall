@@ -2,12 +2,13 @@ package com.AAA.service;
 
 import java.util.List;
 
+import com.AAA.constant.ProductCategory;
 import com.AAA.dto.ProductRequest;
 import com.AAA.model.Product;
 
 public interface ProductService {
 	
-	List<Product> getProducts();
+	List<Product> getProducts(ProductCategory category, String search);
 	
 	Product getProductById(Integer productId);
 	
