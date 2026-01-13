@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.AAA.constant.ProductCategory;
+import com.AAA.dto.ProductQueryParams;
 import com.AAA.dto.ProductRequest;
 import com.AAA.model.Product;
 import com.AAA.service.ProductService;
@@ -28,8 +29,18 @@ public class ProductController {
 	private ProductService productService;
 	
 	@GetMapping("/products")
-	public ResponseEntity<List<Product>> getProducts(@RequestParam(required = false) ProductCategory category, @RequestParam(required = false) String search){
-		List<Product> productList = productService.getProducts(category, search);
+	public ResponseEntity<List<Product>> getProducts(
+			@RequestParam(required = false) ProductCategory category, 
+			@RequestParam(required = false) String search,
+			@RequestParam(defaultValue = "created_date") String orderBy,
+			@RequestParam(defaultValue = "desc") String sort
+	){
+		ProductQueryParams productQueryParams =new ProductQueryParams();
+		productQueryParams.setCategory(category);
+		productQueryParams.setSearch(search);
+		productQueryParams.setOrderBy(orderBy);
+		productQueryParams.setSort(sort);
+		List<Product> productList = productService.getProducts(productQueryParams);
 		return ResponseEntity.status(HttpStatus.OK).body(productList);
 	}
 	

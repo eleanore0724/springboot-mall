@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.AAA.constant.ProductCategory;
 import com.AAA.dao.ProductDao;
+import com.AAA.dto.ProductQueryParams;
 import com.AAA.dto.ProductRequest;
 import com.AAA.model.Product;
 import com.AAA.rowmapper.ProductRowMapper;
@@ -26,18 +27,19 @@ public class ProductDaoImpl implements ProductDao{
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	
 	@Override
-	public List<Product> getProducts(ProductCategory category, String search) {
+	public List<Product> getProducts(ProductQueryParams productQueryParams) {
 		String sql="SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product where 1=1";
 		Map<String,Object> map =new HashMap<>();
 		
-		if(category != null) {
+		if(productQueryParams.getCategory() != null) {
 			sql= sql + " And category =:category";
-			map.put("category", category.name()); //.name => 將這個 Enum 類型去轉換成是一個字串
+			map.put("category", productQueryParams.getCategory().name()); //.name => 將這個 Enum 類型去轉換成是一個字串
 		}
-		if(search != null) {
+		if(productQueryParams.getSearch() != null) {
 			sql= sql + " And product_name Like :search";
-			map.put("search", "%" +search+ "%" ); 
+			map.put("search", "%" +productQueryParams.getSearch()+ "%" ); 
 		}
+		sql =sql+" Order By "+ productQueryParams.getOrderBy() + " "+productQueryParams.getSort();
 		
 		List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 		return productList;
