@@ -27,6 +27,25 @@ public class ProductDaoImpl implements ProductDao{
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	
 	@Override
+	public Integer countProduct(ProductQueryParams productQueryParams) {
+		String sql ="SELECT count(*) FROM product where 1=1";
+
+		Map<String, Object> map = new HashMap<>();
+
+		if (productQueryParams.getCategory() != null) {
+			sql = sql + " And category =:category";
+			map.put("category", productQueryParams.getCategory().name()); // .name => 將這個 Enum 類型去轉換成是一個字串
+		}
+		if (productQueryParams.getSearch() != null) {
+			sql = sql + " And product_name Like :search";
+			map.put("search", "%" + productQueryParams.getSearch() + "%");
+		}
+		
+		Integer total=namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+		return total;
+	}
+	
+	@Override
 	public List<Product> getProducts(ProductQueryParams productQueryParams) {
 		String sql="SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product where 1=1";
 		Map<String,Object> map =new HashMap<>();
@@ -119,6 +138,8 @@ public class ProductDaoImpl implements ProductDao{
 		map.put("productId", productId);
 		namedParameterJdbcTemplate.update(sql, map);
 	}
+
+	
 
 	
 }

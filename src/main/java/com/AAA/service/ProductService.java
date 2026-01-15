@@ -8,6 +8,7 @@ import com.AAA.dto.ProductRequest;
 import com.AAA.model.Product;
 
 public interface ProductService {
+	Integer countProduct(ProductQueryParams productQueryParams);
 	
 	List<Product> getProducts(ProductQueryParams productQueryParams);
 	

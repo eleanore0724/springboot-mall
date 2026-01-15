@@ -20,6 +20,7 @@ import com.AAA.dto.ProductQueryParams;
 import com.AAA.dto.ProductRequest;
 import com.AAA.model.Product;
 import com.AAA.service.ProductService;
+import com.AAA.util.Page;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -33,11 +34,16 @@ public class ProductController {
 	private ProductService productService;
 	
 	@GetMapping("/products")
-	public ResponseEntity<List<Product>> getProducts(
+	public ResponseEntity<Page<Product>> getProducts(
+			//查詢條件
 			@RequestParam(required = false) ProductCategory category, 
 			@RequestParam(required = false) String search,
+			
+			//排序
 			@RequestParam(defaultValue = "created_date") String orderBy,
 			@RequestParam(defaultValue = "desc") String sort,
+			
+			//分頁
 			@RequestParam(defaultValue = "5") @Max(1000) @Min(0)Integer limit,
 			@RequestParam(defaultValue = "0") @Min(0) Integer offset
 	){
@@ -49,8 +55,19 @@ public class ProductController {
 		productQueryParams.setLimit(limit);
 		productQueryParams.setOffset(offset);
 		
+		//取得product List
 		List<Product> productList = productService.getProducts(productQueryParams);
-		return ResponseEntity.status(HttpStatus.OK).body(productList);
+		
+		//取得product總數
+		Integer total =productService.countProduct(productQueryParams);
+		
+		//分頁
+		Page<Product> page =new Page<>();
+		page.setLimit(limit);
+		page.setOffset(offset);
+		page.setTotal(total);
+		page.setResult(productList);
+		return ResponseEntity.status(HttpStatus.OK).body(page);
 	}
 	
 	
