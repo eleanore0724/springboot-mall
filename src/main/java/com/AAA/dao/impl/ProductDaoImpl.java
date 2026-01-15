@@ -31,15 +31,8 @@ public class ProductDaoImpl implements ProductDao{
 		String sql ="SELECT count(*) FROM product where 1=1";
 
 		Map<String, Object> map = new HashMap<>();
-
-		if (productQueryParams.getCategory() != null) {
-			sql = sql + " And category =:category";
-			map.put("category", productQueryParams.getCategory().name()); // .name => 將這個 Enum 類型去轉換成是一個字串
-		}
-		if (productQueryParams.getSearch() != null) {
-			sql = sql + " And product_name Like :search";
-			map.put("search", "%" + productQueryParams.getSearch() + "%");
-		}
+		//查詢條件
+		sql=addFilteringSql(sql,map,productQueryParams);
 		
 		Integer total=namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
 		return total;
@@ -50,15 +43,13 @@ public class ProductDaoImpl implements ProductDao{
 		String sql="SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product where 1=1";
 		Map<String,Object> map =new HashMap<>();
 		
-		if(productQueryParams.getCategory() != null) {
-			sql= sql + " And category =:category";
-			map.put("category", productQueryParams.getCategory().name()); //.name => 將這個 Enum 類型去轉換成是一個字串
-		}
-		if(productQueryParams.getSearch() != null) {
-			sql= sql + " And product_name Like :search";
-			map.put("search", "%" +productQueryParams.getSearch()+ "%" ); 
-		}
+		//查詢條件
+		sql=addFilteringSql(sql,map,productQueryParams);
+		
+		//排序
 		sql =sql+" Order By "+ productQueryParams.getOrderBy() + " "+productQueryParams.getSort();
+		
+		//分頁
 		sql=sql + " LIMIT :limit OFFSET :offset";
 		map.put("limit", productQueryParams.getLimit());
 		map.put("offset", productQueryParams.getOffset());
@@ -139,7 +130,17 @@ public class ProductDaoImpl implements ProductDao{
 		namedParameterJdbcTemplate.update(sql, map);
 	}
 
-	
-
+	private String addFilteringSql(String sql,Map<String,Object> map, ProductQueryParams productQueryParams) {
+		//查詢條件
+		if (productQueryParams.getCategory() != null) {
+			sql = sql + " And category =:category";
+			map.put("category", productQueryParams.getCategory().name()); // .name => 將這個 Enum 類型去轉換成是一個字串
+		}
+		if (productQueryParams.getSearch() != null) {
+			sql = sql + " And product_name Like :search";
+			map.put("search", "%" + productQueryParams.getSearch() + "%");
+		}
+		return sql;
+	}
 	
 }
