@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService{
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
 		
-		//
+		// 使用 MD5 生成密碼的雜湊值
 		String hashedPassword =DigestUtils.md5DigestAsHex(userLoginRequest.getPassword().getBytes());
 				
 		//比較密碼
